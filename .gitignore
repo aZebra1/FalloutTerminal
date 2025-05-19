@@ -5,3 +5,10 @@
 *.cache
 *.pdb
 
+*.vsidx
+*.dll
+*.exe
+*.pdb
+*.cache
+*.dll
+*.pdb

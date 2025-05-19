@@ -72,8 +72,8 @@ namespace FalloutTerminal
 
         private void InitializeComponents()
         {
-            this.Text = "FALLOUT TERMINAL (v0.0.9b) by aZebra_";
-            this.Size = new Size(1200, 800);
+            this.Text = "FALLOUT TERMINAL (v0.0.9c) by aZebra_";
+            this.Size = new Size(1000, 700);
             this.BackColor = terminalBackground;
             this.StartPosition = FormStartPosition.CenterScreen;
             this.Icon = CreateTerminalIcon();
@@ -166,12 +166,17 @@ namespace FalloutTerminal
             }
 
             AppendText("\nUse UP/DOWN arrows and ENTER to select difficulty.", terminalDim);
+
+            // Remove previous event handler to prevent multiple subscriptions
+            this.KeyDown -= DifficultySelect_KeyDown;
             this.KeyDown += DifficultySelect_KeyDown;
         }
 
         private void DifficultySelect_KeyDown(object sender, KeyEventArgs e)
         {
             if (!selectingDifficulty) return;
+
+            e.Handled = true; // Prevent key event bubbling
 
             if (e.KeyCode == Keys.Up)
             {
@@ -188,9 +193,10 @@ namespace FalloutTerminal
             else if (e.KeyCode == Keys.Enter)
             {
                 PlaySound(terminalBeep);
+                selectingDifficulty = false;
+                // Unsubscribe from the event to prevent multiple handlers
                 this.KeyDown -= DifficultySelect_KeyDown;
                 wordLength = 4 + currentDifficulty + 2; // 6, 7, 8, 9 for each difficulty
-                selectingDifficulty = false;
                 StartBootSequence();
             }
         }
@@ -377,63 +383,70 @@ namespace FalloutTerminal
                     {
                         string hex = hexAddresses[index];
                         string data = memoryDump[hex];
-                        string segment = $"{hex} {data}  ";
-                        line += segment;
-
-                        // Process and track words and bracket pairs in the data
-                        ProcessTextSegment(line, data, segment);
+                        line += $"{hex} {data}  ";
                     }
                 }
+
+                // Process entire line at once after it's fully constructed
                 consoleOutput.AppendText(line + "\n");
+
+                // Now process the line for words and brackets
+                ProcessTextSegment(line);
             }
+
             DrawAttempts();
             AppendText("\nPress F1 for help.", terminalDim);
         }
 
-        private void ProcessTextSegment(string fullLine, string data, string segment)
+        private void ProcessTextSegment(string line)
         {
             // Track bracket pairs
             List<char> openingBrackets = new() { '[', '{', '(', '<' };
             List<char> closingBrackets = new() { ']', '}', ')', '>' };
             Stack<(char bracket, int position)> bracketStack = new();
 
-            for (int i = 0; i < data.Length; i++)
-            {
-                char c = data[i];
-                int position = fullLine.Length - segment.Length + hex_prefix_length + i;
-
-                if (openingBrackets.Contains(c))
-                {
-                    bracketStack.Push((c, position));
-                }
-                else if (closingBrackets.Contains(c) && bracketStack.Count > 0)
-                {
-                    var opening = bracketStack.Pop();
-                    int openingIndex = openingBrackets.IndexOf(opening.bracket);
-                    int closingIndex = closingBrackets.IndexOf(c);
-
-                    if (openingIndex == closingIndex)
-                    {
-                        string code = fullLine.Substring(opening.position, position - opening.position + 1);
-                        bracketCodes.Add((code, opening.position, position + 1));
-                    }
-                }
-            }
-
-            // Find words in the data
+            // Find all words in the line
             foreach (string word in wordList)
             {
                 int startPos = 0;
-                while ((startPos = data.IndexOf(word, startPos)) != -1)
+                while ((startPos = line.IndexOf(word, startPos)) != -1)
                 {
-                    int absPos = fullLine.Length - segment.Length + hex_prefix_length + startPos;
-                    wordRanges.Add((word, absPos, absPos + word.Length, word == password));
+                    // Calculate length of entire console output before adding this word
+                    int basePos = consoleOutput.Text.Length - line.Length - 1 + startPos;
+                    wordRanges.Add((word, basePos, basePos + word.Length, word == password));
                     startPos += 1;
                 }
             }
-        }
 
-        private readonly int hex_prefix_length = 7; // Length of "0x1234 "
+            // Find bracket pairs in the line
+            for (int i = 0; i < line.Length; i++)
+            {
+                char c = line[i];
+                int openingIndex = openingBrackets.IndexOf(c);
+
+                if (openingIndex != -1)
+                {
+                    bracketStack.Push((c, consoleOutput.Text.Length - line.Length - 1 + i));
+                }
+                else
+                {
+                    int closingIndex = closingBrackets.IndexOf(c);
+                    if (closingIndex != -1 && bracketStack.Count > 0)
+                    {
+                        var opening = bracketStack.Pop();
+                        int matchIndex = openingBrackets.IndexOf(opening.bracket);
+
+                        if (matchIndex == closingIndex)
+                        {
+                            int startPos = opening.position;
+                            int endPos = consoleOutput.Text.Length - line.Length - 1 + i + 1;
+                            string code = consoleOutput.Text.Substring(startPos, endPos - startPos);
+                            bracketCodes.Add((code, startPos, endPos));
+                        }
+                    }
+                }
+            }
+        }
 
         private void DrawAttempts()
         {
@@ -522,7 +535,11 @@ namespace FalloutTerminal
         {
             if (!bootSequenceComplete || !gameInProgress || showingHelp) return;
 
-            // Clear previous selections
+            // Reset all selection highlighting
+            consoleOutput.SelectionStart = 0;
+            consoleOutput.SelectionLength = consoleOutput.TextLength;
+            consoleOutput.SelectionBackColor = terminalBackground;
+            consoleOutput.SelectionColor = terminalGreen;
             consoleOutput.SelectionLength = 0;
 
             int index = consoleOutput.GetCharIndexFromPosition(e.Location);
