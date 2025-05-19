@@ -1,0 +1,14 @@
+C:\Users\chris\OneDrive\Desktop\falloutTerminal\FalloutTerminal\bin\Debug\net8.0-windows\FalloutTerminal.exe
+C:\Users\chris\OneDrive\Desktop\falloutTerminal\FalloutTerminal\bin\Debug\net8.0-windows\FalloutTerminal.deps.json
+C:\Users\chris\OneDrive\Desktop\falloutTerminal\FalloutTerminal\bin\Debug\net8.0-windows\FalloutTerminal.runtimeconfig.json
+C:\Users\chris\OneDrive\Desktop\falloutTerminal\FalloutTerminal\bin\Debug\net8.0-windows\FalloutTerminal.dll
+C:\Users\chris\OneDrive\Desktop\falloutTerminal\FalloutTerminal\bin\Debug\net8.0-windows\FalloutTerminal.pdb
+C:\Users\chris\OneDrive\Desktop\falloutTerminal\FalloutTerminal\obj\Debug\net8.0-windows\FalloutTerminal.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\chris\OneDrive\Desktop\falloutTerminal\FalloutTerminal\obj\Debug\net8.0-windows\FalloutTerminal.AssemblyInfoInputs.cache
+C:\Users\chris\OneDrive\Desktop\falloutTerminal\FalloutTerminal\obj\Debug\net8.0-windows\FalloutTerminal.AssemblyInfo.cs
+C:\Users\chris\OneDrive\Desktop\falloutTerminal\FalloutTerminal\obj\Debug\net8.0-windows\FalloutTerminal.csproj.CoreCompileInputs.cache
+C:\Users\chris\OneDrive\Desktop\falloutTerminal\FalloutTerminal\obj\Debug\net8.0-windows\FalloutTerminal.dll
+C:\Users\chris\OneDrive\Desktop\falloutTerminal\FalloutTerminal\obj\Debug\net8.0-windows\refint\FalloutTerminal.dll
+C:\Users\chris\OneDrive\Desktop\falloutTerminal\FalloutTerminal\obj\Debug\net8.0-windows\FalloutTerminal.pdb
+C:\Users\chris\OneDrive\Desktop\falloutTerminal\FalloutTerminal\obj\Debug\net8.0-windows\FalloutTerminal.genruntimeconfig.cache
+C:\Users\chris\OneDrive\Desktop\falloutTerminal\FalloutTerminal\obj\Debug\net8.0-windows\ref\FalloutTerminal.dll
