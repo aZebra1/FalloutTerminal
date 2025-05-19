@@ -31,7 +31,7 @@ namespace FalloutTerminal
         private readonly Color terminalGreen = Color.FromArgb(33, 253, 17);
         private readonly Color terminalBackground = Color.FromArgb(12, 12, 12);
         private readonly Font terminalFont = new("Consolas", 14, FontStyle.Bold);
-        private readonly Color terminalHighlight = Color.FromArgb(255, 255, 100);
+        private readonly Color terminalHighlight = Color.FromArgb(252, 252, 252);
         private readonly Color terminalDim = Color.FromArgb(20, 120, 20);
         private readonly Color terminalError = Color.FromArgb(255, 100, 100);
 
@@ -72,18 +72,26 @@ namespace FalloutTerminal
 
         private void InitializeComponents()
         {
-            this.Text = "FALLOUT TERMINAL (v0.0.9c) by aZebra_";
-            this.Size = new Size(1000, 700);
+            this.Text = "FALLOUT TERMINAL (v0.0.9f) by aZebra_";
+            this.Size = new Size(1200, 800);
             this.BackColor = terminalBackground;
             this.StartPosition = FormStartPosition.CenterScreen;
             this.Icon = CreateTerminalIcon();
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
 
+            Panel backgroundPanel = new Panel
+            {
+                BackgroundImage = Image.FromFile("terminal-bg.png"),
+                BackgroundImageLayout = ImageLayout.Stretch,
+                Dock = DockStyle.Fill
+            };
+            this.Controls.Add(backgroundPanel);
+
             consoleOutput = new RichTextBox
             {
                 ReadOnly = true,
-                BackColor = terminalBackground,
+                BackColor = Color.Black,
                 ForeColor = terminalGreen,
                 Font = terminalFont,
                 BorderStyle = BorderStyle.None,
@@ -95,11 +103,14 @@ namespace FalloutTerminal
                 DetectUrls = false,
                 ScrollBars = RichTextBoxScrollBars.None
             };
+            backgroundPanel.Controls.Add(consoleOutput);
+            consoleOutput.BringToFront();
+
             consoleOutput.MouseClick += ConsoleOutput_MouseClick;
             consoleOutput.MouseMove += ConsoleOutput_MouseMove;
             consoleOutput.KeyDown += ConsoleOutput_KeyDown;
             consoleOutput.MouseLeave += ConsoleOutput_MouseLeave;
-            this.Controls.Add(consoleOutput);
+
             this.KeyPreview = true;
             this.KeyDown += TerminalForm_KeyDown;
 
@@ -136,12 +147,16 @@ namespace FalloutTerminal
                 }
 
                 terminalClick = new System.Media.SoundPlayer();
+                terminalClick.SoundLocation = "Sounds/terminalClick.wav";
                 terminalBeep = new System.Media.SoundPlayer();
+                terminalBeep.SoundLocation = "Sounds/terminalBeep.wav";
                 terminalSuccess = new System.Media.SoundPlayer();
+                terminalSuccess.SoundLocation = "Sounds/terminalSuccess.wav";
                 terminalFail = new System.Media.SoundPlayer();
+                terminalFail.SoundLocation = "Sounds/terminalFail.wav";
 
                 // Default to system sounds if files aren't available
-                System.Media.SystemSounds.Asterisk.Play();
+                System.Media.SystemSounds.Hand.Play();
             }
             catch
             {
@@ -224,7 +239,8 @@ namespace FalloutTerminal
             AppendText("> ROBCO INDUSTRIES (TM) TERMLINK PROTOCOL\n", terminalGreen);
             AppendText("> HELP SYSTEM\n\n", terminalGreen);
 
-            AppendText("TERMINAL HACKING INSTRUCTIONS:\n\n", terminalHighlight);
+            AppendText("TERMINAL HACKING INSTRUCTIONS:\n", terminalHighlight);
+            AppendText("CUZ CHURDLEY DOESN'T KNOW HOW TO :O\n\n", terminalGreen);
 
             AppendText("1. Find a password hidden among the characters displayed in the memory dump.\n", terminalGreen);
             AppendText("2. Click on a word to guess. All words are " + wordLength + " characters long.\n", terminalGreen);
@@ -236,6 +252,10 @@ namespace FalloutTerminal
             AppendText("- Mouse: Click on words to guess or bracket pairs for bonuses\n", terminalGreen);
             AppendText("- F1: Toggle this help screen\n", terminalGreen);
             AppendText("- ESC: Exit game\n\n", terminalGreen);
+
+            AppendText("USAGE:\n", terminalHighlight);
+            AppendText("- This is a private program, unknown distribution is gonna make me angry\n", terminalGreen);
+            AppendText("- Made with <3 by Chris\n\n", terminalGreen);
 
             if (guessHistory.Count > 0)
             {
